@@ -718,16 +718,22 @@
                 <h3>掃描流程圖</h3>
                 <div class="mermaid">
                     graph TD
-                        A["基本掃描<br/>nmap IP"]
-                        B["全埠掃描<br/>nmap -p- IP"]
-                        C["服務版本<br/>nmap -sV IP"]
-                        D["NSE 腳本<br/>nmap -sC IP"]
-                        E["分析結果"]
+                        A["🔍 基本掃描<br/>nmap IP"]
+                        B["📊 全埠掃描<br/>nmap -p- IP"]
+                        C["🔎 服務版本<br/>nmap -sV IP"]
+                        D["⚙️ NSE 腳本<br/>nmap -sC IP"]
+                        E["✅ 分析結果"]
                         
                         A --> B
                         B --> C
                         C --> D
                         D --> E
+                        
+                        style A fill:#e3f2fd
+                        style B fill:#bbdefb
+                        style C fill:#90caf9
+                        style D fill:#64b5f6
+                        style E fill:#42a5f5
                         
                         style A fill:#3498db
                         style B fill:#3498db
@@ -994,12 +1000,85 @@ Password: (直接按 Enter，留空)</code></div>
                     • <code>$1$</code> = MD5 加密格式 (MD5Crypt)
                 </div>
                 
-                <h3>FTP 工作模式</h3>
-                <div class="mermaid">
-                    graph LR
-                        A["主動模式<br/>Active Mode"]
-                        B["被動模式<br/>Passive Mode"]
-                        C["PORT命令<br/>伺服器<br/>連到客戶端"]
+                <h3>FTP 工作模式 - 主動 vs 被動</h3>
+                <div class="concept-box" style="background-color: #f0fdf4; border-left: 4px solid #10b981;">
+                    <strong>核心概念：</strong> FTP 使用兩條獨立的連線
+                    <ul style="margin: 0.5rem 0 0 1rem;">
+                        <li><strong>控制連線 (Control Connection)：</strong> Port 21 - 用於命令和回應</li>
+                        <li><strong>資料連線 (Data Connection)：</strong> 用於實際檔案傳輸 - Port 依模式而定</li>
+                    </ul>
+                </div>
+
+                <h4>主動模式 (Active Mode)</h4>
+                <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; margin: 1rem 0; border-radius: 0.5rem;">
+                    <p style="margin-top: 0;"><strong>流程：</strong></p>
+                    <ol style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                        <li>客戶端從隨機 Port N (>1024) 連線到伺服器 Port 21</li>
+                        <li>客戶端發送 <code style="background-color: #fff7ed; padding: 0.2rem 0.4rem; border-radius: 0.2rem;">PORT N+1</code> 命令，告知伺服器監聽的資料 Port</li>
+                        <li><strong>伺服器主動發起</strong>資料連線 → 從 Port 20 連到客戶端 Port N+1</li>
+                        <li>透過資料連線進行檔案傳輸</li>
+                    </ol>
+                    <p style="margin-bottom: 0;"><strong>問題：</strong> 如果客戶端在防火牆後方，防火牆會阻止伺服器的回連 ❌</p>
+                </div>
+
+                <h4>被動模式 (Passive Mode)</h4>
+                <div style="background-color: #dbeafe; border-left: 4px solid #0ea5e9; padding: 1rem; margin: 1rem 0; border-radius: 0.5rem;">
+                    <p style="margin-top: 0;"><strong>流程：</strong></p>
+                    <ol style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                        <li>客戶端從隨機 Port N (>1024) 連線到伺服器 Port 21</li>
+                        <li>客戶端發送 <code style="background-color: #eff6ff; padding: 0.2rem 0.4rem; border-radius: 0.2rem;">PASV</code> 命令</li>
+                        <li>伺服器迴應告知隨機 Port P (>1024) 供客戶端連線</li>
+                        <li><strong>客戶端主動發起</strong>資料連線 → 從 Port N+1 連到伺服器 Port P</li>
+                        <li>透過資料連線進行檔案傳輸</li>
+                    </ol>
+                    <p style="margin-bottom: 0;"><strong>優勢：</strong> 客戶端所有連線都是主動發起，防火牆更容易通過 ✅</p>
+                </div>
+
+                <h4>對比表</h4>
+                <div class="table-container">
+                    <table>
+                        <tr style="background-color: #f3f4f6;">
+                            <th>特性</th>
+                            <th style="background-color: #fef3c7;">主動模式 (Active)</th>
+                            <th style="background-color: #dbeafe;">被動模式 (Passive)</th>
+                        </tr>
+                        <tr>
+                            <td><strong>控制連線</strong></td>
+                            <td>客戶端 → 伺服器 Port 21</td>
+                            <td>客戶端 → 伺服器 Port 21</td>
+                        </tr>
+                        <tr>
+                            <td><strong>資料連線</strong></td>
+                            <td style="background-color: #fff7ed;">伺服器 → 客戶端 Port N+1</td>
+                            <td style="background-color: #eff6ff;">客戶端 → 伺服器 Port P</td>
+                        </tr>
+                        <tr>
+                            <td><strong>誰發起資料連線</strong></td>
+                            <td style="background-color: #fff7ed;">伺服器（主動）</td>
+                            <td style="background-color: #eff6ff;">客戶端（被動等待）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PORT 命令</strong></td>
+                            <td><code>PORT N+1</code> 由客戶端發送</td>
+                            <td><code>PASV</code> 由客戶端發送</td>
+                        </tr>
+                        <tr>
+                            <td><strong>防火牆友善</strong></td>
+                            <td style="background-color: #fecaca;">❌ 易被客戶端防火牆阻止</td>
+                            <td style="background-color: #dcfce7;">✅ 更容易通過防火牆</td>
+                        </tr>
+                        <tr>
+                            <td><strong>適用場景</strong></td>
+                            <td>舊系統、不在防火牆後</td>
+                            <td>現代應用、NAT/防火牆環境</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="hint-box" style="background-color: #fef3c7; border-left: 4px solid #f59e0b;">
+                    <h4 style="margin-top: 0;">💡 實戰小貼士</h4>
+                    <p style="margin: 0;">在課程的滲透測試環境中，通常使用 <strong>被動模式</strong> 因為 Kali 和靶機在同一內部網路，防火牆不會干擾。可用 <code>passive</code> 命令切換模式。</p>
+                </div>
 
         <section id="resources">
             <h2>📚 線上資源參考</h2>
@@ -1519,24 +1598,28 @@ kiwis{DD76665D6F7BE968F6A4U911BE49BCC1B}</code></div>
             <section id="tools">
                 <h2>🛠️ 核心工具介紹</h2>
                 
-                <h3>工具概覽</h3>
+                <h3>工具概覽 - 滲透測試工具鏈</h3>
                 <div class="mermaid">
                     graph TD
-                        A["滲透<br/>測試"]
-                        B["掃描<br/>Nmap"]
-                        C["利用<br/>Exploit"]
-                        D["破解<br/>John"]
-                        E["提權<br/>linPEAS<br/>GTFOBins"]
+                        A["🎯 滲透<br/>測試開始"]
+                        B["📡 掃描<br/>Nmap"]
+                        C["💥 利用<br/>Exploit"]
+                        D["🔑 破解<br/>John"]
+                        E["🔓 提權<br/>linPEAS<br/>GTFOBins"]
+                        F["✅ Root 權限"]
                         
                         A --> B
                         B --> C
                         C --> D
                         D --> E
+                        E --> F
                         
-                        style B fill:#3498db
-                        style C fill:#e74c3c
-                        style D fill:#f39c12
-                        style E fill:#27ae60
+                        style A fill:#9c27b0,color:#fff
+                        style B fill:#3498db,color:#fff
+                        style C fill:#e74c3c,color:#fff
+                        style D fill:#f39c12,color:#fff
+                        style E fill:#27ae60,color:#fff
+                        style F fill:#2ecc71,color:#fff
                 </div>
                 
                 <h3>工具詳解</h3>
@@ -2007,24 +2090,24 @@ cat file | wc -l         統計行數</code></div>
                     <strong>🔗 PEASS-ng：</strong> https://github.com/peass-ng/PEASS-ng
                 </div>
                 
-                <h3>後續課程建議</h3>
+                <h3>後續課程建議 - 學習路徑</h3>
                 <div class="mermaid">
                     graph TD
                         A["Linux<br/>滲透測試<br/>✅ 完成"]
-                        B["Windows<br/>滲透測試"]
-                        C["Active Directory<br/>攻擊"]
-                        D["雲端安全<br/>AWS/Azure"]
+                        B["Windows<br/>滲透測試<br/>進階"]
+                        C["Active Directory<br/>攻擊<br/>企業環境"]
+                        D["雲端安全<br/>AWS/Azure<br/>現代基礎設施"]
                         
                         A --> B
                         B --> C
                         C --> D
                         
-                        style A fill:#27ae60,color:#fff
-                        style B fill:#3498db
-                        style C fill:#3498db
-                        style D fill:#3498db
+                        style A fill:#27ae60,color:#fff,stroke:#1e8449,stroke-width:3px
+                        style B fill:#3498db,color:#fff
+                        style C fill:#9b59b6,color:#fff
+                        style D fill:#e74c3c,color:#fff
                 </div>
-
+                
                 <h3>實戰練習平台</h3>
                 <div class="tool-card">
                     <h4>🏆 平台推薦</h4>
